@@ -19,7 +19,7 @@ class Barang extends CI_Controller {
 		$res = $query->result();
 		$num_rows = $query->num_rows();
 
-		$tmpl = array(  'table_open'    => '<table class="table table-striped table-hover">',
+		$tmpl = array(  'table_open'    => '<table class="table table-striped table-hover dataTable">',
 				'row_alt_start'  => '<tr>',
 				'row_alt_end'    => '</tr>'
 			);
@@ -56,7 +56,7 @@ class Barang extends CI_Controller {
 	{
 		$data = array(	'page' 		=> 'barang_view', 
 				'link_add' 	=> anchor('barang/tambah', 'Tambah Data', array('class' => 'btn btn-success',  )),
-				'judul' 	=> 'Barang',
+				'judul' 	=> 'Data Barang',
 				'table'		=> $this->gen_table()
 				);
 		$this->load->view('index', $data);
@@ -65,7 +65,7 @@ class Barang extends CI_Controller {
 	public function combo_jenis($sel)
 	{
 
-		$ret = '<div class="form-group"><label for="jenis" class="col-sm-2 control-label">Jenis Barang</label><div class="col-sm-10">';
+		$ret = '<div class="form-group row"><label for="jenis" class="col-sm-2 control-label">Jenis Barang</label><div class="col-sm-10">';
     	$query=$this->Jenis_model->get_all();
     	$res = $query->result();
 		foreach ($res as $row) {
@@ -80,7 +80,7 @@ class Barang extends CI_Controller {
 	public function combo_satuan($sel)
 	{
 
-		$ret = '<div class="form-group"><label for="satuan" class="col-sm-2 control-label">Satuan</label><div class="col-sm-10">';
+		$ret = '<div class="form-group row"><label for="satuan" class="col-sm-2 control-label">Satuan</label><div class="col-sm-10">';
     	$query=$this->Satuan_model->get_all();
     	$res = $query->result();
 		foreach ($res as $row) {

@@ -35,8 +35,7 @@ class Jenis extends CI_Controller {
 			foreach ($res as $row){
 				$this->table->add_row(	++$i,
 							$row->type,
-							anchor('admin/jenis/ubah/'.$row->id_jenis,'<span class="fa fa-pencil"></span>',array( 'title' => 'Ubah', 'class' => 'btn btn-primary btn-xs', 'data-toggle' => 'tooltip')).'&nbsp;'.
-							anchor('admin/jenis/hapus/'.$row->id_jenis,'<span class="fa fa-trash"></span>',array( 'title' => 'Hapus', 'class' => 'btn btn-danger btn-xs', 'data-toggle' => 'tooltip'))
+							anchor('jenis/ubah/'.$row->id_jenis,'<span class="fa fa-pencil-alt"></span>',array( 'title' => 'Ubah', 'class' => 'btn btn-primary btn-xs', 'data-toggle' => 'tooltip'))
 						);
 			}
 		}
@@ -45,54 +44,47 @@ class Jenis extends CI_Controller {
 
 	public function index()
 	{
-		$data = array(	'page' 		=> 'admin_views/jenis_view', 
-				'link_add' 	=> anchor('admin/jenis/tambah', 'Tambah Data', array('class' => 'btn btn-success',  )),
-				'judul' 	=> 'Jenis',
+		$data = array(	'page' 		=> 'jenis_view', 
+				'link_add' 	=> anchor('jenis/tambah', 'Tambah Data', array('class' => 'btn btn-success',  )),
+				'judul' 	=> 'Data Jenis',
 				'table'		=> $this->gen_table()
 				);
-		$this->load->view('admin_views/index', $data);
+		$this->load->view('index', $data);
 	}
 
 	public function tambah()
 	{
-		$data = array(	'page' 		=> 'admin_views/jenis_view', 
+		$data = array(	'page' 		=> 'jenis_view', 
 				'judul' 	=> 'Tambah Jenis',
-				'form'		=> 'admin/jenis/add',
-				'id_jenis'	=> $this->Jenis_model->gen_kode(),
+				'form'		=> 'jenis/add',
 				);
-		$this->load->view('admin_views/index', $data);
+		$this->load->view('index', $data);
 	}
 
 	public function add()
 	{
 		$inputan = array(
-				'id_jenis' 	=> $this->input->post('id_jenis'),
 				'type' 	=> $this->input->post('type'),
 				);
-
-		if($_FILES['foto']['name']!=''){
-			$upload = $this->upload_foto('FOTO-'.$inputan['id_jenis'],'foto');
-			$inputan['foto']= $this->fname_file;
-		}
 
 		if($this->Jenis_model->add($inputan)){
 			$this->session->set_flashdata('msg_title', 'Sukses!');
 			$this->session->set_flashdata('msg_status', 'alert-success');
 			$this->session->set_flashdata('msg', 'Data berhasil disimpan! ');
-			redirect('admin/jenis');
+			redirect('jenis');
 		}else{
 			$this->session->set_flashdata('msg_title', 'Terjadi Kesalahan!');
 			$this->session->set_flashdata('msg_status', 'alert-danger');
 			$this->session->set_flashdata('msg', 'Data gagal disimpan! ');
-			redirect('admin/jenis/tambah');
+			redirect('jenis/tambah');
 		}
 	}
 
 	public function ubah($v)
 	{
-		$data = array(	'page' 		=> 'admin_views/jenis_view', 
+		$data = array(	'page' 		=> 'jenis_view', 
 				'judul' 	=> 'Ubah Jenis',
-				'form'		=> 'admin/jenis/update',
+				'form'		=> 'jenis/update',
 				);
 
 		$q = $this->Jenis_model->get_data($v);
@@ -102,7 +94,7 @@ class Jenis extends CI_Controller {
 			$data['type'] 	= $row->type;
 		}
 
-		$this->load->view('admin_views/index', $data);
+		$this->load->view('index', $data);
 	}
 
 	public function update()
@@ -111,23 +103,16 @@ class Jenis extends CI_Controller {
 				'type' 	=> $this->input->post('type'),
 				);
 
-		if($_FILES['foto']['name']!=''){
-			$upload = $this->upload_foto('FOTO-'.$inputan['id_jenis'],'foto');
-			$inputan['foto']= $this->fname_file;
-		}else{
-			unset($inputan['foto']);
-		}
-
 		if($this->Jenis_model->update($inputan, $this->input->post('id_jenis'))){
 			$this->session->set_flashdata('msg_title', 'Sukses!');
 			$this->session->set_flashdata('msg_status', 'alert-success');
 			$this->session->set_flashdata('msg', 'Data berhasil disimpan! ');
-			redirect('admin/jenis');
+			redirect('jenis');
 		}else{
 			$this->session->set_flashdata('msg_title', 'Terjadi Kesalahan!');
 			$this->session->set_flashdata('msg_status', 'alert-danger');
 			$this->session->set_flashdata('msg', 'Data gagal disimpan! ');
-			redirect('admin/jenis/ubah/'.$this->input->post('id_jenis'));
+			redirect('jenis/ubah/'.$this->input->post('id_jenis'));
 		}
 	}
 
@@ -153,7 +138,7 @@ class Jenis extends CI_Controller {
 			$this->session->set_flashdata('msg_status', 'alert-danger');
 			$this->session->set_flashdata('msg', 'Data gagal dihapus! ');
 		}
-		redirect('admin/jenis');
+		redirect('jenis');
 	}
 
 	public function upload_foto($fn,$in)

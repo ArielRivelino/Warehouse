@@ -39,8 +39,8 @@ class User extends CI_Controller {
 							$row->staff,
 							$row->role_id,
 							$row->email,
-							anchor('admin/user/ubah/'.$row->nik,'<span class="fa fa-pencil"></span>',array( 'title' => 'Ubah', 'class' => 'btn btn-primary btn-xs', 'data-toggle' => 'tooltip')).'&nbsp;'.
-							anchor('admin/user/hapus/'.$row->nik,'<span class="fa fa-trash"></span>',array( 'title' => 'Hapus', 'class' => 'btn btn-danger btn-xs', 'data-toggle' => 'tooltip'))
+							anchor('user/ubah/'.$row->nik,'<span class="fa fa-pencil"></span>',array( 'title' => 'Ubah', 'class' => 'btn btn-primary btn-xs', 'data-toggle' => 'tooltip')).'&nbsp;'.
+							anchor('user/hapus/'.$row->nik,'<span class="fa fa-trash"></span>',array( 'title' => 'Hapus', 'class' => 'btn btn-danger btn-xs', 'data-toggle' => 'tooltip'))
 						);
 			}
 		}
@@ -49,22 +49,22 @@ class User extends CI_Controller {
 
 	public function index()
 	{
-		$data = array(	'page' 		=> 'admin_views/user_view', 
-				'link_add' 	=> anchor('admin/user/tambah', 'Tambah Data', array('class' => 'btn btn-success',  )),
+		$data = array(	'page' 		=> 'user_view', 
+				'link_add' 	=> anchor('user/tambah', 'Tambah Data', array('class' => 'btn btn-success',  )),
 				'judul' 	=> 'User',
 				'table'		=> $this->gen_table()
 				);
-		$this->load->view('admin_views/index', $data);
+		$this->load->view('index', $data);
 	}
 
 	public function tambah()
 	{
-		$data = array(	'page' 		=> 'admin_views/user_view', 
+		$data = array(	'page' 		=> 'user_view', 
 				'judul' 	=> 'Tambah User',
-				'form'		=> 'admin/user/add',
+				'form'		=> 'user/add',
 				'nik'	=> $this->User_model->gen_kode(),
 				);
-		$this->load->view('admin_views/index', $data);
+		$this->load->view('index', $data);
 	}
 
 	public function add()
@@ -87,20 +87,20 @@ class User extends CI_Controller {
 			$this->session->set_flashdata('msg_title', 'Sukses!');
 			$this->session->set_flashdata('msg_status', 'alert-success');
 			$this->session->set_flashdata('msg', 'Data berhasil disimpan! ');
-			redirect('admin/user');
+			redirect('user');
 		}else{
 			$this->session->set_flashdata('msg_title', 'Terjadi Kesalahan!');
 			$this->session->set_flashdata('msg_status', 'alert-danger');
 			$this->session->set_flashdata('msg', 'Data gagal disimpan! ');
-			redirect('admin/user/tambah');
+			redirect('user/tambah');
 		}
 	}
 
 	public function ubah($v)
 	{
-		$data = array(	'page' 		=> 'admin_views/user_view', 
+		$data = array(	'page' 		=> 'user_view', 
 				'judul' 	=> 'Ubah User',
-				'form'		=> 'admin/user/update',
+				'form'		=> 'user/update',
 				);
 
 		$q = $this->User_model->get_data($v);
@@ -114,7 +114,7 @@ class User extends CI_Controller {
 			$data['email'] 	= $row->email;
 		}
 
-		$this->load->view('admin_views/index', $data);
+		$this->load->view('index', $data);
 	}
 
 	public function update()
@@ -138,12 +138,12 @@ class User extends CI_Controller {
 			$this->session->set_flashdata('msg_title', 'Sukses!');
 			$this->session->set_flashdata('msg_status', 'alert-success');
 			$this->session->set_flashdata('msg', 'Data berhasil disimpan! ');
-			redirect('admin/user');
+			redirect('user');
 		}else{
 			$this->session->set_flashdata('msg_title', 'Terjadi Kesalahan!');
 			$this->session->set_flashdata('msg_status', 'alert-danger');
 			$this->session->set_flashdata('msg', 'Data gagal disimpan! ');
-			redirect('admin/user/ubah/'.$this->input->post('nik'));
+			redirect('user/ubah/'.$this->input->post('nik'));
 		}
 	}
 
@@ -169,7 +169,7 @@ class User extends CI_Controller {
 			$this->session->set_flashdata('msg_status', 'alert-danger');
 			$this->session->set_flashdata('msg', 'Data gagal dihapus! ');
 		}
-		redirect('admin/user');
+		redirect('user');
 	}
 
 	public function upload_foto($fn,$in)

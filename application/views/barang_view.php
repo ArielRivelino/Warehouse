@@ -1,63 +1,79 @@
 <!-- Page Heading -->
 <div class="d-sm-flex align-items-center justify-content-between mb-4">
-	<h1 class="h3 mb-0 text-gray-800"><?= $judul; ?></h1>
+	<h1 class="h3 mb-0 text-gray-800">Barang</h1>
 </div>
 
 <!-- Content Row -->
 <div class="row">
 
 	<div class="col">
-		<?php if(isset($form)):?>
 
-		<?= form_open_multipart($form, array("class" => "form-horizontal") );?>
+		<div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary"><?= $judul; ?></h6>
+                <div class="dropdown no-arrow">
+                    <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      	<?= isset($link_add)?$link_add:'';?>
+                    </a>
+                </div>
+            </div>
+            <!-- Card Body -->
+            <div class="card-body">
+                <?= isset($table)?$table:'';?>
+                <?php if(isset($form)):?>
 
-			
-			<input type="hidden" name="id_barang" value="<?= isset($id_barang)?$id_barang:'';?>">
-			<?= isset($cbjenis)?$cbjenis:'';?>
-			<div class="form-group">
-				<label for="item_name" class="col-sm-2 control-label">Item name</label>
-				<div class="col-sm-10">
-					<input type="text" class="form-control" id="item_name" name="item_name" value="<?= isset($item_name)?$item_name:"";?>" placeholder="Item name" required>
-				</div>
-			</div>
-			<div class="form-group">
-				<label for="stock" class="col-sm-2 control-label">Stock</label>
-				<div class="col-sm-10">
-					<input type="number" class="form-control" id="stock" name="stock" min="1" value="<?= isset($stock)?$stock:"";?>" placeholder="Stock" required>
-				</div>
-			</div>
-			<?= isset($cbsatuan)?$cbsatuan:'';?>
-			<div class="form-group">
-				<label for="blok" class="col-sm-2 control-label">Blok</label>
-				<div class="col-sm-10">
-					<input type="text" class="form-control" id="blok" name="blok" value="<?= isset($blok)?$blok:"";?>" placeholder="Blok" required>
-				</div>
-			</div>
-			<div class="form-group">
-				<label for="code" class="col-sm-2 control-label">Code</label>
-				<div class="col-sm-10">
-					<input type="text" class="form-control" id="code" name="code" value="<?= isset($code)?$code:"";?>" placeholder="Code" required>
-				</div>
-			</div>
-			<div class="form-group">
-				<label for="line" class="col-sm-2 control-label">Line</label>
-				<div class="col-sm-10">
-					<input type="text" class="form-control" id="line" name="line" value="<?= isset($line)?$line:"";?>" placeholder="Line" required>
-				</div>
-			</div>
-			<div class="form-group">
-				<label for="column" class="col-sm-2 control-label">Column</label>
-				<div class="col-sm-10">
-					<input type="text" class="form-control" id="column" name="column" value="<?= isset($column)?$column:"";?>" placeholder="Column" required>
-				</div>
-			</div>
-			<div class="form-group">
-				<div class="col-sm-offset-2 col-sm-10">
-					<button type="submit" class="btn btn-success">Simpan</button>
-				</div>
-			</div>
-		</form>
-		<?php endif; ?>
+				<?= form_open_multipart($form, array("class" => "") );?>
+
+					
+					<input type="hidden" name="id_barang" value="<?= isset($id_barang)?$id_barang:'';?>">
+					<?= isset($cbjenis)?$cbjenis:'';?>
+					<div class="form-group row row">
+						<label for="item_name" class="col-sm-2 control-label">Item name</label>
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="item_name" name="item_name" value="<?= isset($item_name)?$item_name:"";?>" placeholder="Item name" required>
+						</div>
+					</div>
+					<div class="form-group row">
+						<label for="stock" class="col-sm-2 control-label">Stock</label>
+						<div class="col-sm-10">
+							<input type="number" class="form-control" id="stock" name="stock" min="1" value="<?= isset($stock)?$stock:"";?>" placeholder="Stock" required>
+						</div>
+					</div>
+					<?= isset($cbsatuan)?$cbsatuan:'';?>
+					<div class="form-group row">
+						<label for="blok" class="col-sm-2 control-label">Blok</label>
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="blok" name="blok" value="<?= isset($blok)?$blok:"";?>" placeholder="Blok" required>
+						</div>
+					</div>
+					<div class="form-group row">
+						<label for="code" class="col-sm-2 control-label">Code</label>
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="code" name="code" value="<?= isset($code)?$code:"";?>" placeholder="Code" required>
+						</div>
+					</div>
+					<div class="form-group row">
+						<label for="line" class="col-sm-2 control-label">Line</label>
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="line" name="line" value="<?= isset($line)?$line:"";?>" placeholder="Line" required>
+						</div>
+					</div>
+					<div class="form-group row">
+						<label for="column" class="col-sm-2 control-label">Column</label>
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="column" name="column" value="<?= isset($column)?$column:"";?>" placeholder="Column" required>
+						</div>
+					</div>
+					<div class="form-group row">
+						<div class="offset-sm-2 col-sm-10">
+							<button type="submit" class="btn btn-success">Simpan</button>
+						</div>
+					</div>
+				</form>
+				<?php endif; ?>
+            </div>
+        </div>
+		
 
 		<?php 
 			$msg = $this->session->flashdata("msg");
@@ -72,9 +88,9 @@
 			</div>
 		<?php endif; ?>
 
-		<?= isset($link_add)?$link_add:'';?>
+		
 		<br><br>
-		<?= isset($table)?$table:'';?>
+		
 	</div>
 </div>
 

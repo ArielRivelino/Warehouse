@@ -27,7 +27,7 @@
     <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#master_menu" aria-expanded="true" aria-controls="collapseTwo">
             <i class="fas fa-fw fa-cog"></i>
-            <span>MASTER</span>
+            <span>Master</span>
         </a>
         <div id="master_menu" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
@@ -72,6 +72,29 @@
             </div>
         </div>
     </li>
+    
+    <!-- Divider -->
+    <hr class="sidebar-divider">
+
+    <!-- Nav Item - Pages Collapse Menu -->
+    <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#setting_menu" aria-expanded="true" aria-controls="collapseTwo">
+            <i class="fas fa-fw fa-wrench"></i>
+            <span>Setting</span>
+        </a>
+        <div id="setting_menu" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+
+                <h6 class="collapse-header">Maintenance Master:</h6>
+                <a class="collapse-item" href="<?php echo site_url('jenis') ?>">Jenis</a>
+                <a class="collapse-item" href="<?php echo site_url('satuan') ?>">Satuan</a>
+                <a class="collapse-item" href="<?php echo site_url('menu') ?>">Menu</a>
+                <a class="collapse-item" href="<?php echo site_url('satuan') ?>">User Role</a>
+                <a class="collapse-item" href="<?php echo site_url('satuan') ?>">User Access</a>
+            </div>
+        </div>
+    </li>
+
     <!-- Divider -->
     <hr class="sidebar-divider d-none d-md-block">
 
