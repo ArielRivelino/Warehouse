@@ -1,36 +1,32 @@
-<?php
+<?php 
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Menu_model extends CI_Model {
+class User_access_model extends CI_Model {
 
 	public function __construct() 
 	{ 
 		parent::__construct(); 
 	} 
 
-	var $table = 't_menu';
-	var $pk = 'menu_id';
+	var $table = 't_access';
+	var $join1 = 'user_role';
+	var $join2 = 't_menu';
+	var $pk = 'id_access';
+	var $fk1 = 'role_id';
+	var $fk2 = 'menu_id';
 
 	public function get_all()
 	{
-		return $this->db->get($this->table);
+		$this->db->select('*');
+		$this->db->from($this->table);
+		$this->db->join($this->join1, $this->table.'.'.$this->fk1.' = '.$this->join1.'.'.$this->fk1);
+		$this->db->join($this->join2, $this->table.'.'.$this->fk2.' = '.$this->join2.'.'.$this->fk2);
+		return $this->db->get();
 	}
 
 	public function get_data($id)
 	{
 		$this->db->where(array($this->pk => $id));
-		return $this->db->get($this->table);
-	}
-
-	public function get_parent()
-	{
-		$this->db->where(array('type' => 0));
-		return $this->db->get($this->table);
-	}
-
-	public function get_childern($id)
-	{
-		$this->db->where(array('type' => $id));
 		return $this->db->get($this->table);
 	}
 
@@ -54,18 +50,7 @@ class Menu_model extends CI_Model {
 
 	public function delete($id)
 	{
-		$this->db->where(array($this->pk => $id));
-		$q =  $this->db->get($this->table);
-		$res = $q->result();
-		foreach ($res as $row) {
-			if($row->type==0){
-				$this->db->delete($this->table, array("type" => $id));
-			}
-		}
 		return $this->db->delete($this->table, array($this->pk => $id));
-	}	
+	}
 
 }
-
-/* End of file Menu_model.php */
-/* Location: ./application/models/Menu_model.php */

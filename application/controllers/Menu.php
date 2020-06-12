@@ -44,7 +44,7 @@ public function __construct()
 		$data = array(	'page' 		=> 'menu_view', 
 				'link_add' 	=> anchor('menu/tambah', 'Tambah Data', array('class' => 'btn btn-success',  )),
 				'judul' 	=> 'Data menu',
-				'table'		=> $this->Menu_model->get_all() //get_parent
+				'table'		=> $this->Menu_model->get_parent() //get_parent
 				);
 		$this->load->view('index', $data);
 	}
@@ -60,10 +60,22 @@ public function __construct()
 
 	public function add()
 	{
-		$inputan = array(
-				'menu' 	=> $this->input->post('menu'),
-				);
+		if($this->input->post('level') == 0){
 
+			$inputan = array(
+					'menu_name' => $this->input->post('menu_name'),
+					'type' => $this->input->post('level'),
+					'url' => $this->input->post('icon_url'),
+					'status' => 1
+					);
+		}else{
+			$inputan = array(
+					'menu_name' => $this->input->post('menu_name'),
+					'type' => $this->input->post('type'),
+					'url' => $this->input->post('url'),
+					'status' => 1
+					);
+		}
 
 		if($this->Menu_model->add($inputan)){
 			$this->session->set_flashdata('msg_title', 'Sukses!');
@@ -88,8 +100,10 @@ public function __construct()
 		$q = $this->Menu_model->get_data($v);
 		$res = $q->result();
 		foreach ($res as $row) {
-			$data['id_menu'] 	= $row->id_menu;
-			$data['menu'] 	= $row->menu;
+			$data['menu_id'] 	= $row->menu_id;
+			$data['menu_name'] 	= $row->menu_name;
+			$data['url'] 	= $row->url;
+			$data['type'] 	= $row->type;
 		}
 
 		$this->load->view('index', $data);
@@ -97,12 +111,23 @@ public function __construct()
 
 	public function update()
 	{
-		$inputan = array(
-				'menu' 	=> $this->input->post('menu'),
-				);
+		if($this->input->post('level') == 0){
+
+			$inputan = array(
+					'menu_name' => $this->input->post('menu_name'),
+					'type' => $this->input->post('level'),
+					'url' => $this->input->post('icon_url'),
+					);
+		}else{
+			$inputan = array(
+					'menu_name' => $this->input->post('menu_name'),
+					'type' => $this->input->post('type'),
+					'url' => $this->input->post('url'),
+					);
+		}
 
 
-		if($this->Menu_model->update($inputan, $this->input->post('id_menu'))){
+		if($this->Menu_model->update($inputan, $this->input->post('menu_id'))){
 			$this->session->set_flashdata('msg_title', 'Sukses!');
 			$this->session->set_flashdata('msg_status', 'alert-success');
 			$this->session->set_flashdata('msg', 'Data berhasil disimpan! ');
@@ -111,7 +136,7 @@ public function __construct()
 			$this->session->set_flashdata('msg_title', 'Terjadi Kesalahan!');
 			$this->session->set_flashdata('msg_status', 'alert-danger');
 			$this->session->set_flashdata('msg', 'Data gagal disimpan! ');
-			redirect('menu/ubah/'.$this->input->post('id_menu'));
+			redirect('menu/ubah/'.$this->input->post('menu_id'));
 		}
 	}
 

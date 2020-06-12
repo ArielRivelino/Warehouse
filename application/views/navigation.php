@@ -3,8 +3,9 @@
 
     <!-- Sidebar - Brand -->
     <a class="sidebar-brand d-flex align-items-center justify-content-center" href="<?php echo base_url() ?>">
-        <div class="sidebar-brand-icon rotate-n-15">
-            <i class="fas fa-laugh-wink"></i>
+        <div class="sidebar-brand-icon">
+            <!-- <i class="fas fa-laugh-wink"></i> -->
+            <img src="<?= base_url('assets/img/logo.png'); ?>" alt="Logo" style="width: 100%">
         </div>
         <div class="sidebar-brand-text mx-3">Warehouse Application</div>
     </a>
@@ -89,8 +90,8 @@
                 <a class="collapse-item" href="<?php echo site_url('jenis') ?>">Jenis</a>
                 <a class="collapse-item" href="<?php echo site_url('satuan') ?>">Satuan</a>
                 <a class="collapse-item" href="<?php echo site_url('menu') ?>">Menu</a>
-                <a class="collapse-item" href="<?php echo site_url('satuan') ?>">User Role</a>
-                <a class="collapse-item" href="<?php echo site_url('satuan') ?>">User Access</a>
+                <a class="collapse-item" href="<?php echo site_url('user_role') ?>">User Role</a>
+                <a class="collapse-item" href="<?php echo site_url('user_access') ?>">User Access</a>
             </div>
         </div>
     </li>

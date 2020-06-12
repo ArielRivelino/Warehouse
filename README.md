@@ -1,3 +1,11 @@
+# Warehouse Applicatin
+
+
+## USER
+- Gudang
+- Kepala Cabang
+- User (Peminjam)
+
 ###################
 What is CodeIgniter
 ###################
