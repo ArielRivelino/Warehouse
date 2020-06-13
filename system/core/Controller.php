@@ -84,7 +84,7 @@ class CI_Controller {
 		if(!isset($_SESSION['user']) &&  $ins->router->class!="login"){
 			redirect('login');
 		}
-		if($ins->router->class!="Dashboard" && $ins->router->class!="error_custom"){
+		if($ins->router->class!="Dashboard" && $ins->router->class!="error_custom" && $ins->router->class!="login"){
 			$sg2 = ($this->uri->segment(2) === FALSE)?'':'/'.$this->uri->segment(2);
 			$link = $ins->router->class;
 			if($sg2=="/stok" || $sg2=="/baru"){
