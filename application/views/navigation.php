@@ -20,81 +20,61 @@
             <span>Dashboard</span>
         </a>
     </li>
+    <?php
+        $q = $this->User_access_model->get_where(array("t_access.role_id" => $_SESSION['role_id']));
+        $res = $q->result();
+        $data_menu = [];
+        foreach ($res as $row) {
+            //print_r($row);
+            /*$data_menu[$row->type][] = array(
+                                                "menu_id" => $row->menu_id,
+                                                "menu_name" => $row->menu_name,
+                                                "aksi" => $row->aksi,
+                                                );*/
+            $data_menu[$row->type][] = $row->menu_id;
+        }
+        //print_r($data_menu);
+    ?>
 
     <!-- Divider -->
     <hr class="sidebar-divider">
-
+    <?php
+        $q = $this->Menu_model->get_parent();
+        $res = $q->result();
+        foreach ($res as $row):
+            if(array_key_exists($row->menu_id, $data_menu)):
+                $q2 = $this->Menu_model->get_childern($row->menu_id);
+                if($q2->num_rows()>0):
+                    $res2 = $q2->result();
+    ?>
+                    <li class="nav-item">
+                        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#<?= str_replace(" ", "_", $row->menu_name); ?>" aria-expanded="true" aria-controls="collapseTwo">
+                            <i class="fas fa-fw <?= $row->url; ?>"></i>
+                            <span><?= $row->menu_name; ?></span>
+                        </a>
+                        <div id="<?= str_replace(" ", "_", $row->menu_name); ?>" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+                            <div class="bg-white py-2 collapse-inner rounded">
+                                <?php foreach($res2 as $row2): 
+                                     if(in_array($row2->menu_id, $data_menu[$row->menu_id])):
+                                ?>
+                                    <a class="collapse-item" href="<?= base_url($row2->url) ?>"><?= $row2->menu_name; ?></a>
+                                <?php endif; ?>
+                                <?php endforeach; ?>
+                            </div>
+                        </div>
+                    </li>
+                <?php else: ?>
+                <li class="nav-item active">
+                    <a class="nav-link" href="<?= $row->url; ?>">
+                        <i class="fas fa-fw fa-tachometer-alt"></i>
+                        <span><?= $row->menu_name; ?></span>
+                    </a>
+                </li>
+                <?php endif; ?>
+            <?php endif; ?>
+    <?php endforeach; ?>
     <!-- Nav Item - Pages Collapse Menu -->
-    <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#master_menu" aria-expanded="true" aria-controls="collapseTwo">
-            <i class="fas fa-fw fa-cog"></i>
-            <span>Master</span>
-        </a>
-        <div id="master_menu" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
-            <div class="bg-white py-2 collapse-inner rounded">
-                <h6 class="collapse-header">Custom Master:</h6>
-                <a class="collapse-item" href="<?php echo site_url('barang') ?>">Master Barang</a>
-                <a class="collapse-item" href="<?php echo site_url('Warehouse/user')?>">Master User</a>
-            </div>
-        </div>
-    </li>
-
-    <!-- Divider -->
-    <hr class="sidebar-divider">
-
-    <!-- Nav Item - Pages Collapse Menu -->
-    <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#formulir_menu" aria-expanded="true" aria-controls="collapseTwo">
-            <i class="fas fa-fw fa-cog"></i>
-            <span>Permintaan</span>
-        </a>
-        <div id="formulir_menu" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
-            <div class="bg-white py-2 collapse-inner rounded">
-                <a class="collapse-item" href="<?php echo site_url('Warehouse/formpermintaan') ?>">Permintaan Stok</a>
-                <a class="collapse-item" href="<?php echo site_url('Warehouse/formpermintaan') ?>">Permintaan Barang Baru</a>
-            </div>
-        </div>
-    </li>
-
-    <!-- Divider -->
-    <hr class="sidebar-divider">
-
-    <!-- Nav Item - Pages Collapse Menu -->
-    <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#laporan_menu" aria-expanded="true" aria-controls="collapseTwo">
-            <i class="fas fa-fw fa-file"></i>
-            <span>Laporan</span>
-        </a>
-        <div id="laporan_menu" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
-            <div class="bg-white py-2 collapse-inner rounded">
-                <a class="collapse-item" href="<?php echo site_url('Warehouse/formpermintaan') ?>">Barang</a>
-                <a class="collapse-item" href="<?php echo site_url('Warehouse/formpermintaan') ?>">Permintaan Stok</a>
-                <a class="collapse-item" href="<?php echo site_url('Warehouse/formpermintaan') ?>">Permintaan Barang Baru</a>
-            </div>
-        </div>
-    </li>
     
-    <!-- Divider -->
-    <hr class="sidebar-divider">
-
-    <!-- Nav Item - Pages Collapse Menu -->
-    <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#setting_menu" aria-expanded="true" aria-controls="collapseTwo">
-            <i class="fas fa-fw fa-wrench"></i>
-            <span>Setting</span>
-        </a>
-        <div id="setting_menu" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
-            <div class="bg-white py-2 collapse-inner rounded">
-
-                <h6 class="collapse-header">Maintenance Master:</h6>
-                <a class="collapse-item" href="<?php echo site_url('jenis') ?>">Jenis</a>
-                <a class="collapse-item" href="<?php echo site_url('satuan') ?>">Satuan</a>
-                <a class="collapse-item" href="<?php echo site_url('menu') ?>">Menu</a>
-                <a class="collapse-item" href="<?php echo site_url('user_role') ?>">User Role</a>
-                <a class="collapse-item" href="<?php echo site_url('user_access') ?>">User Access</a>
-            </div>
-        </div>
-    </li>
 
     <!-- Divider -->
     <hr class="sidebar-divider d-none d-md-block">

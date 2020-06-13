@@ -3,11 +3,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class User_access extends CI_Controller {
 
-	var $fname_file;
 
 	public function __construct() 
 	{ 
 		parent::__construct();
+		if(!isset($_SESSION['user'])){
+			redirect('login');
+		}
 		$this->load->model("User_access_model", "", TRUE);
 		$this->load->model("User_role_model", "", TRUE);
 		$this->load->model("Menu_model", "", TRUE);
@@ -35,11 +37,27 @@ class User_access extends CI_Controller {
 			$i = 0;
 
 			foreach ($res as $row){
+				$view_aksi = "";
+				if($row->aksi=="1,2,3"){
+					$view_aksi = '<span class="badge badge-success">Semua Akses</span>';
+				}else{
+
+					$aksi = explode(",", $row->aksi);
+					foreach ($aksi as $k => $v) {
+						if($v==1){
+							$view_aksi .= '<span class="badge badge-info">Melihat Data</span><br>';
+						}else if($v==2){
+							$view_aksi .= '<span class="badge badge-info">Tambah Data</span><br>';
+						}else if($v==3){
+							$view_aksi .= '<span class="badge badge-info">Ubah Data</span><br>';
+						}
+					}
+				}
 				$this->table->add_row(	
 							++$i,
 							$row->role,
 							$row->menu_name,
-							$row->aksi,
+							$view_aksi,
 							anchor('user_access/ubah/'.$row->id_access,'<span class="fa fa-pencil-alt"></span>',array( 'title' => 'Ubah', 'class' => 'btn btn-primary btn-xs', 'data-toggle' => 'tooltip')).'&nbsp;'.
 							anchor('user_access/hapus/'.$row->id_access,'<span class="fa fa-trash"></span>',array( 'title' => 'Hapus', 'class' => 'btn btn-danger btn-xs', 'data-toggle' => 'tooltip'))
 						);
@@ -75,17 +93,18 @@ class User_access extends CI_Controller {
 
 	public function combo_menu($sel)
 	{
-		$ret = '<div class="form-group row"><label for="menu_id" class="col-sm-2 control-label">Role</label><div class="col-sm-10">';
+		$ret = '<div class="form-group row"><label for="menu_id" class="col-sm-2 control-label">Menu</label><div class="col-sm-10">';
     	$query=$this->Menu_model->get_parent();
     	$res = $query->result();
     	$opt = [];
 		foreach ($res as $row) {
-			$opt[$row->menu_id] = $row->menu_name;
+			//$opt[$row->menu_id] = $row->menu_name;
 
 			$q = $this->Menu_model->get_childern($row->menu_id);
     		$rs = $q->result();
     		foreach ($rs as $rw) {
-				$opt[$rw->menu_id] = "&nbsp; - ".$rw->menu_name;
+				//$opt[$row->menu_name][$rw->menu_id] = "&nbsp; - ".$rw->menu_name;
+				$opt[$row->menu_name][$rw->menu_id] = $rw->menu_name;
 			}
 		}
 		$js = 'class="form-control"';
@@ -108,9 +127,19 @@ class User_access extends CI_Controller {
 	public function add()
 	{
 		$inputan = array(
-				'role' 	=> $this->input->post('role'),
+				'role_id' 	=> $this->input->post('role_id'),
+				'menu_id' 	=> $this->input->post('menu_id'),
+				'aksi' 	=> join(",",$this->input->post('aksi')),
 				);
-		if($this->user_access_model->add($inputan)){
+		
+		$cek = false;
+		$id_access = $this->User_access_model->cek_data(array("menu_id" => $inputan["menu_id"], "role_id" => $inputan["role_id"]));
+		if($id_access!=-1){
+			$cek = $this->User_access_model->update($inputan, $id_access);
+		}else{
+			$cek = $this->User_access_model->add($inputan);
+		}
+		if($cek){
 			$this->session->set_flashdata('msg_title', 'Sukses!');
 			$this->session->set_flashdata('msg_status', 'alert-success');
 			$this->session->set_flashdata('msg', 'Data berhasil disimpan! ');
@@ -126,15 +155,27 @@ class User_access extends CI_Controller {
 	public function ubah($v)
 	{
 		$data = array(	'page' 		=> 'user_access_view', 
-				'judul' 	=> 'Ubah user_access',
-				'form'		=> 'user_access/update',
+						'judul' 	=> 'Ubah user_access',
+						'form'		=> 'user_access/update',
 				);
 
-		$q = $this->user_access_model->get_data($v);
+		$q = $this->User_access_model->get_data($v);
 		$res = $q->result();
 		foreach ($res as $row) {
-			$data['role_id'] 	= $row->role_id;
-			$data['role'] 	= $row->role;
+			$data['id_access'] 	= $row->id_access;
+			$data['combo_role'] = $this->combo_role($row->role_id);
+			$data['combo_menu'] = $this->combo_menu($row->menu_id);
+			$aksi = explode(",", $row->aksi);
+			
+			foreach ($aksi as $k => $v) {
+				if($v==1){
+					$data['cb_view'] = "checked";
+				}else if($v==2){
+					$data['cb_add'] = "checked";
+				}else if($v==3){
+					$data['cb_update'] = "checked";
+				}
+			}
 		}
 
 		$this->load->view('index', $data);
@@ -143,10 +184,12 @@ class User_access extends CI_Controller {
 	public function update()
 	{
 		$inputan = array(
-				'role' 	=> $this->input->post('role'),
-				);
+				'role_id' 	=> $this->input->post('role_id'),
+				'menu_id' 	=> $this->input->post('menu_id'),
+				'aksi' 	=> join(",",$this->input->post('aksi')),
+				);	
 
-		if($this->user_access_model->update($inputan, $this->input->post('role_id'))){
+		if($this->User_access_model->update($inputan, $this->input->post('id_access'))){
 			$this->session->set_flashdata('msg_title', 'Sukses!');
 			$this->session->set_flashdata('msg_status', 'alert-success');
 			$this->session->set_flashdata('msg', 'Data berhasil disimpan! ');
@@ -155,13 +198,13 @@ class User_access extends CI_Controller {
 			$this->session->set_flashdata('msg_title', 'Terjadi Kesalahan!');
 			$this->session->set_flashdata('msg_status', 'alert-danger');
 			$this->session->set_flashdata('msg', 'Data gagal disimpan! ');
-			redirect('user_access/ubah/'.$this->input->post('role_id'));
+			redirect('user_access/ubah/'.$this->input->post('id_access'));
 		}
 	}
 
 	public function hapus($v='')
 	{
-		if($this->user_access_model->delete($v)){
+		if($this->User_access_model->delete($v)){
 			
 			$this->session->set_flashdata('msg_title', 'Sukses!');
 			$this->session->set_flashdata('msg_status', 'alert-success');

@@ -9,23 +9,34 @@ class User_model extends CI_Model {
 	} 
 
 	var $table = 'user';
+	var $join1 = 'user_role';
 	var $pk = 'nik';
+	var $fk1 = 'role_id';
 
 	public function get_all()
 	{
-		return $this->db->get($this->table);
+		$this->db->select('*');
+		$this->db->from($this->table);
+		$this->db->join($this->join1, $this->table.'.'.$this->fk1.' = '.$this->join1.'.'.$this->fk1);
+		return $this->db->get();
 	}
 
 	public function get_data($id)
 	{
-		$this->db->where(array($this->pk => $id));
-		return $this->db->get($this->table);
+		$this->db->select('*');
+		$this->db->from($this->table);
+		$this->db->join($this->join1, $this->table.'.'.$this->fk1.' = '.$this->join1.'.'.$this->fk1);
+		$this->db->where(array($this->table.".".$this->pk => $id));
+		return $this->db->get();
 	}
 
 	public function get_where($id)
 	{
+		$this->db->select('*');
+		$this->db->from($this->table);
+		$this->db->join($this->join1, $this->table.'.'.$this->fk1.' = '.$this->join1.'.'.$this->fk1);
 		$this->db->where($id);
-		return $this->db->get($this->table);
+		return $this->db->get();
 	}
 
 	public function add($da)
@@ -47,15 +58,17 @@ class User_model extends CI_Model {
 	
 	public function login($dada)
 	{
-		$this->db->where(array($this->pk => $v));
+		$this->db->where($dada);
 		$q = $this->db->get($this->table);
-		if($q->num_rows()>0){;
+		if($q->num_rows()>0){
 			$res = $q->result();
 			foreach ($res as $row) {
-				$_SESSION[md5("User")] = $row->username;
+				$_SESSION["user"] = $row->nik;
+				$_SESSION["name"] = $row->name;
+				$_SESSION["role_id"] = $row->role_id;
 			}
 			return true;
-		}else{;
+		}else{
 			return false;
 		}
 	}

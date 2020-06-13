@@ -25,14 +25,24 @@
 				<?= form_open_multipart($form, array("class" => "") );?>
 
 					
-					<input type="hidden" name="role_id" value="<?= isset($role_id)?$role_id:'';?>">
+					<input type="hidden" name="id_access" value="<?= isset($id_access)?$id_access:'';?>">
 					<?= isset($combo_role)?$combo_role:''; ?>
 					<?= isset($combo_menu)?$combo_menu:''; ?>
 					<div class="form-group row row">
 						<label for="aksi" class="col-sm-2 control-label">Aksi</label>
 						<div class="col-sm-10">
-							
-							<input type="text" class="form-control" id="role" name="role" value="<?= isset($role)?$role:"";?>" placeholder="Role" required>
+							<div class="form-check form-check-inline">
+							  	<input class="form-check-input" type="checkbox" id="cb_view" value="1" name="aksi[]" <?= isset($cb_view)?"checked":'';?> >
+							  	<label class="form-check-label" for="cb_view">Melihat Data</label>
+							</div>
+							<div class="form-check form-check-inline">
+							  	<input class="form-check-input" type="checkbox" id="cb_add" value="2" name="aksi[]" <?= isset($cb_add)?"checked":'';?> >
+							  	<label class="form-check-label" for="cb_add">Tambah Data</label>
+							</div>
+							<div class="form-check form-check-inline">
+							  	<input class="form-check-input" type="checkbox" id="cb_update" value="3" name="aksi[]" <?= isset($cb_update)?"checked":'';?> >
+							  	<label class="form-check-label" for="cb_update">Ubah Data</label>
+							</div>
 						</div>
 					</div>
 					<div class="form-group row">

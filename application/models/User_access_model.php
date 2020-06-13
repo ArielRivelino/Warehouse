@@ -26,14 +26,35 @@ class User_access_model extends CI_Model {
 
 	public function get_data($id)
 	{
-		$this->db->where(array($this->pk => $id));
-		return $this->db->get($this->table);
+		$this->db->select('*');
+		$this->db->from($this->table);
+		$this->db->join($this->join1, $this->table.'.'.$this->fk1.' = '.$this->join1.'.'.$this->fk1);
+		$this->db->join($this->join2, $this->table.'.'.$this->fk2.' = '.$this->join2.'.'.$this->fk2);
+		$this->db->where(array($this->table.".".$this->pk => $id));
+		return $this->db->get();
 	}
 
 	public function get_where($id)
 	{
+		$this->db->select('*');
+		$this->db->from($this->table);
+		$this->db->join($this->join1, $this->table.'.'.$this->fk1.' = '.$this->join1.'.'.$this->fk1);
+		$this->db->join($this->join2, $this->table.'.'.$this->fk2.' = '.$this->join2.'.'.$this->fk2);
 		$this->db->where($id);
-		return $this->db->get($this->table);
+		return $this->db->get();
+	}
+
+	public function cek_data($da)
+	{
+		$q = $this->db->get_where($this->table, $da);
+		if($q->num_rows()>0){
+			$res = $q->result();
+			foreach ($res as $row) {
+				return $row->id_access;
+			}
+		}else{
+			return -1;
+		}
 	}
 
 	public function add($da)

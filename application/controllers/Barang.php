@@ -8,6 +8,9 @@ class Barang extends CI_Controller {
 	public function __construct() 
 	{ 
 		parent::__construct();
+		if(!isset($_SESSION['user'])){
+			redirect('login');
+		}
 		$this->load->model("Barang_model", "", TRUE);
 		$this->load->model("Jenis_model", "", TRUE);
 		$this->load->model("Satuan_model", "", TRUE);
@@ -15,7 +18,7 @@ class Barang extends CI_Controller {
 
 	public function gen_table()
 	{
-		$query=$this->Barang_model->get_all();
+		$query=$this->Barang_model->get_where(array("master_barang.status" => 1));
 		$res = $query->result();
 		$num_rows = $query->num_rows();
 
@@ -170,7 +173,7 @@ class Barang extends CI_Controller {
 				'code' 	=> $this->input->post('code'),
 				'line' 	=> $this->input->post('line'),
 				'column' 	=> $this->input->post('column'),
-				'status' 	=> $this->input->post('status'),
+				//'status' 	=> $this->input->post('status'),
 				);
 
 		if($this->Barang_model->update($inputan, $this->input->post('id_barang'))){
@@ -209,30 +212,6 @@ class Barang extends CI_Controller {
 			$this->session->set_flashdata('msg', 'Data gagal dihapus! ');
 		}
 		redirect('barang');
-	}
-
-	public function upload_foto($fn,$in)
-	{
-		unset($config);
-		$config['upload_path'] 	 = './assets/img/';
-		$config['allowed_types'] = 'jpg|jpeg|png';
-		$config['max_size']	 = '50000';
-		$config['overwrite']	 = true;
-		$config['file_name'] 	 = $fn;
-
-		$this->load->library('upload', $config);
-		$this->upload->initialize($config);
-		if (!$this->upload->do_upload($in)) {
-			//echo $this->upload->display_errors();
-			$rn = false;
-		}else{
-			$file_data = $this->upload->data();
-			$this->fname_file=$file_data['file_name'];
-			$rn = true;
-		}
-
-		return $rn;
-
 	}
 
 

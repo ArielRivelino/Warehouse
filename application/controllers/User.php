@@ -8,7 +8,11 @@ class User extends CI_Controller {
 	public function __construct() 
 	{ 
 		parent::__construct();
+		if(!isset($_SESSION['user'])){
+			redirect('login');
+		}
 		$this->load->model("User_model", "", TRUE);
+		$this->load->model("User_role_model", "", TRUE);
 	}
 
 	public function gen_table()
@@ -17,7 +21,7 @@ class User extends CI_Controller {
 		$res = $query->result();
 		$num_rows = $query->num_rows();
 
-		$tmpl = array(  'table_open'    => '<table class="table table-striped table-hover">',
+		$tmpl = array(  'table_open'    => '<table class="table table-striped table-hover dataTable">',
 				'row_alt_start'  => '<tr>',
 				'row_alt_end'    => '</tr>'
 			);
@@ -26,20 +30,20 @@ class User extends CI_Controller {
 
 		$this->table->set_empty("&nbsp;");
 
-		$this->table->set_heading('No', 'Name', 'Password', 'Staff', 'Role id', 'Email', 'Aksi');
+		$this->table->set_heading('NIK', 'Name', 'Staff', 'Role id', 'Email', 'Aksi');
 
 		if ($num_rows > 0)
 		{
 			$i = 0;
 
 			foreach ($res as $row){
-				$this->table->add_row(	++$i,
+				$this->table->add_row(
+							$row->nik,
 							$row->name,
-							$row->password,
 							$row->staff,
-							$row->role_id,
+							$row->role,
 							$row->email,
-							anchor('user/ubah/'.$row->nik,'<span class="fa fa-pencil"></span>',array( 'title' => 'Ubah', 'class' => 'btn btn-primary btn-xs', 'data-toggle' => 'tooltip')).'&nbsp;'.
+							anchor('user/ubah/'.$row->nik,'<span class="fa fa-pencil-alt"></span>',array( 'title' => 'Ubah', 'class' => 'btn btn-primary btn-xs', 'data-toggle' => 'tooltip')).'&nbsp;'.
 							anchor('user/hapus/'.$row->nik,'<span class="fa fa-trash"></span>',array( 'title' => 'Hapus', 'class' => 'btn btn-danger btn-xs', 'data-toggle' => 'tooltip'))
 						);
 			}
@@ -57,12 +61,27 @@ class User extends CI_Controller {
 		$this->load->view('index', $data);
 	}
 
+	public function combo_role($sel)
+	{
+
+		$ret = '<div class="form-group row"><label for="role_id" class="col-sm-2 control-label">Role</label><div class="col-sm-10">';
+    	$query=$this->User_role_model->get_all();
+    	$res = $query->result();
+		foreach ($res as $row) {
+			$opt[$row->role_id] = $row->role;
+		}
+		$js = 'class="form-control"';
+		$ret= $ret.''.form_dropdown('role_id',$opt,$sel,$js);
+		$ret= $ret.'</div></div>';
+		return $ret;
+	}
+
 	public function tambah()
 	{
 		$data = array(	'page' 		=> 'user_view', 
 				'judul' 	=> 'Tambah User',
 				'form'		=> 'user/add',
-				'nik'	=> $this->User_model->gen_kode(),
+				'cb_role'	=> $this->combo_role("")
 				);
 		$this->load->view('index', $data);
 	}
@@ -70,18 +89,13 @@ class User extends CI_Controller {
 	public function add()
 	{
 		$inputan = array(
-				'nik' 	=> $this->input->post('nik'),
-				'name' 	=> $this->input->post('name'),
+				'nik' 		=> $this->input->post('nik'),
+				'name' 		=> $this->input->post('name'),
 				'password' 	=> $this->input->post('password'),
 				'staff' 	=> $this->input->post('staff'),
 				'role_id' 	=> $this->input->post('role_id'),
 				'email' 	=> $this->input->post('email'),
 				);
-
-		if($_FILES['foto']['name']!=''){
-			$upload = $this->upload_foto('FOTO-'.$inputan['nik'],'foto');
-			$inputan['foto']= $this->fname_file;
-		}
 
 		if($this->User_model->add($inputan)){
 			$this->session->set_flashdata('msg_title', 'Sukses!');
@@ -110,8 +124,9 @@ class User extends CI_Controller {
 			$data['name'] 	= $row->name;
 			$data['password'] 	= $row->password;
 			$data['staff'] 	= $row->staff;
-			$data['role_id'] 	= $row->role_id;
 			$data['email'] 	= $row->email;
+			$data['cb_role'] = $this->combo_role($row->role_id);
+
 		}
 
 		$this->load->view('index', $data);
@@ -120,19 +135,12 @@ class User extends CI_Controller {
 	public function update()
 	{
 		$inputan = array(
-				'name' 	=> $this->input->post('name'),
+				'name' 		=> $this->input->post('name'),
 				'password' 	=> $this->input->post('password'),
 				'staff' 	=> $this->input->post('staff'),
 				'role_id' 	=> $this->input->post('role_id'),
 				'email' 	=> $this->input->post('email'),
 				);
-
-		if($_FILES['foto']['name']!=''){
-			$upload = $this->upload_foto('FOTO-'.$inputan['nik'],'foto');
-			$inputan['foto']= $this->fname_file;
-		}else{
-			unset($inputan['foto']);
-		}
 
 		if($this->User_model->update($inputan, $this->input->post('nik'))){
 			$this->session->set_flashdata('msg_title', 'Sukses!');
@@ -149,18 +157,8 @@ class User extends CI_Controller {
 
 	public function hapus($v='')
 	{
-		$foto='';
-		$q = $this->User_model->get_data($v);
-		$res = $q->result();
-		foreach ($res as $row) {
-			$foto=$row->foto;
-		}
 
 		if($this->User_model->delete($v)){
-			$msg = "";
-			if(!unlink($foto)){
-				$msg = "GAGAL";
-			}
 			$this->session->set_flashdata('msg_title', 'Sukses!');
 			$this->session->set_flashdata('msg_status', 'alert-success');
 			$this->session->set_flashdata('msg', 'Data berhasil dihapus! ');
@@ -170,30 +168,6 @@ class User extends CI_Controller {
 			$this->session->set_flashdata('msg', 'Data gagal dihapus! ');
 		}
 		redirect('user');
-	}
-
-	public function upload_foto($fn,$in)
-	{
-		unset($config);
-		$config['upload_path'] 	 = './assets/img/';
-		$config['allowed_types'] = 'jpg|jpeg|png';
-		$config['max_size']	 = '50000';
-		$config['overwrite']	 = true;
-		$config['file_name'] 	 = $fn;
-
-		$this->load->library('upload', $config);
-		$this->upload->initialize($config);
-		if (!$this->upload->do_upload($in)) {
-			//echo $this->upload->display_errors();
-			$rn = false;
-		}else{
-			$file_data = $this->upload->data();
-			$this->fname_file=$file_data['file_name'];
-			$rn = true;
-		}
-
-		return $rn;
-
 	}
 
 
