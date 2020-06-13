@@ -6,9 +6,6 @@ class Satuan extends CI_Controller {
 	public function __construct() 
 	{ 
 		parent::__construct();
-		if(!isset($_SESSION['user'])){
-			redirect('login');
-		}
 		$this->load->model("Satuan_model", "", TRUE);
 	}
 

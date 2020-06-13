@@ -8,33 +8,13 @@ class Permintaan extends CI_Controller {
 	public function __construct() 
 	{ 
 		parent::__construct();
-		if(!isset($_SESSION['user'])){
-			redirect('login');
-		}
-
-		$sg_1 =  $this->uri->segment(1);
-    	if ($this->uri->segment(2) === FALSE){
-    		$sg_2 =  $this->uri->segment(2);
-    	}
-    	$sg2 = ($this->uri->segment(2) === FALSE)?'':'/'.$this->uri->segment(2);
-    	$link = "$sg_1$sg2";
-    	$q = $this->User_access_model->get_where(array("t_access.role_id" => $_SESSION['role_id'], "url" => $link));
-		$res = $q->result();
-		if($q->num_rows()>0){
-    		foreach ($res as $row) {
-    			//echo $row->aksi;
-    		}
-		}else{
-			redirect("error_custom/error_403");
-		}
-
 		$this->load->model("Permintaan_model", "", TRUE);
 		$this->load->model("Barang_model", "", TRUE);
 		$this->load->model("Jenis_model", "", TRUE);
 		$this->load->model("Satuan_model", "", TRUE);
 	}
 
-	public function gen_table($typ)
+	public function gen_table($typ, $role)
 	{
 		$query=$this->Permintaan_model->get_where(array("t_request.request_type" => $typ));
 		$res = $query->result();
@@ -49,20 +29,48 @@ class Permintaan extends CI_Controller {
 
 		$this->table->set_empty("&nbsp;");
 
-		$this->table->set_heading('No', 'Nama Peminta', 'Barang', 'Jumlah', 'Status');
+		if($role==0){
+			$this->table->set_heading('No', 'Nama Peminta', 'Barang', 'Jumlah', 'Status');
+		}else{
+			$this->table->set_heading('No', 'Nama Peminta', 'Barang', 'Jumlah', 'Status', 'Aksi');
+		}
 
 		if ($num_rows > 0)
 		{
 			$i = 0;
 
 			foreach ($res as $row){
-				$this->table->add_row(
-							++$i,
-							$row->name,
-							$row->item_name,
-							$row->amount,
-							$row->status_request==0?'<span class="badge badge-warning">Belum di Approve</span>':'<span class="badge badge-success">Sudah di Approve</span>'
-						);
+				$sts = '';
+				$btn = '';
+				if($row->status_request==0){
+					$tty = $typ==0?'stok':'baru';
+					$sts = '<span class="badge badge-warning">Belum di Approve</span>';
+					$btn = anchor('permintaan/approve/'.$row->request_id.'/'.$tty,'<span class="fa fa-check"></span>',array( 'title' => 'Approve', 'class' => 'btn btn-success btn-xs', 'data-toggle' => 'tooltip'));
+					$btn .= "&nbsp;";
+					$btn .= anchor('permintaan/tolak/'.$row->request_id.'/'.$tty,'<span class="fa fa-ban"></span>',array( 'title' => 'Tolak', 'class' => 'btn btn-danger btn-xs', 'data-toggle' => 'tooltip'));
+				}else if($row->status_request==1){
+					$sts = '<span class="badge badge-success">Sudah di Approve</span>';
+				}else{
+					$sts = '<span class="badge badge-danger">Ditolak</span>';
+				}
+				if($role==0){
+					$this->table->add_row(
+								++$i,
+								$row->name,
+								$row->item_name,
+								$row->amount,
+								$sts
+							);
+				}else{
+					$this->table->add_row(
+								++$i,
+								$row->name,
+								$row->item_name,
+								$row->amount,
+								$sts,
+								$btn
+							);
+				}
 			}
 		}
 		return  $this->table->generate();
@@ -82,9 +90,29 @@ class Permintaan extends CI_Controller {
 	{
 		$data = array(	'page' 		=> 'permintaan_view', 
 				'link_add' 	=> anchor('permintaan/stok_tambah', 'Tambah Data', array('class' => 'btn btn-success',  )),
-				'judul' 	=> 'Permintaan Stok',
-				'table'		=> $this->gen_table(0)
+				'judul' 	=> 'Permintaan Stok ',
+				'table'		=> $this->gen_table(0, 0)
 				);
+		if(parent::get_aksi()!="1,2,3"){
+			$aksi = explode(",", parent::get_aksi());
+			foreach ($aksi as $k => $v) {
+				if(!in_array(1, $aksi)){
+					redirect('permintaan/stok_tambah');
+				}else if(!in_array(2, $aksi)){
+					unset($data['link_add']);
+				}else if(!in_array(3, $aksi)){
+					$data['table'] = $this->gen_table(0, 0);
+				}
+
+				if($v==1){
+					$data['table'] = $this->gen_table(0, 0);
+				}else if($v==2){
+					$data['link_add'] = anchor('permintaan/stok_tambah', 'Tambah Data', array('class' => 'btn btn-success',  ));
+				}else if($v==3){
+					$data['table'] = $this->gen_table(0, 1);
+				}
+			}
+		}
 		$this->load->view('index', $data);
 	}
 
@@ -130,8 +158,28 @@ class Permintaan extends CI_Controller {
 				'page' 		=> 'permintaan_view', 
 				'link_add' 	=> anchor('permintaan/baru_tambah', 'Tambah Data', array('class' => 'btn btn-success',  )),
 				'judul' 	=> 'Permintaan Baru',
-				'table'		=> $this->gen_table(1)
+				'table'		=> $this->gen_table(1, 0)
 				);
+		if(parent::get_aksi()!="1,2,3"){
+			$aksi = explode(",", parent::get_aksi());
+			foreach ($aksi as $k => $v) {
+				if(!in_array(1, $aksi)){
+					redirect('permintaan/baru_tambah');
+				}else if(!in_array(2, $aksi)){
+					unset($data['link_add']);
+				}else if(!in_array(3, $aksi)){
+					$data['table'] = $this->gen_table(1, 0);
+				}
+
+				if($v==1){
+					$data['table'] = $this->gen_table(1, 0);
+				}else if($v==2){
+					$data['link_add'] = anchor('permintaan/baru_tambah', 'Tambah Data', array('class' => 'btn btn-success',  ));
+				}else if($v==3){
+					$data['table'] = $this->gen_table(1, 1);
+				}
+			}
+		}
 		$this->load->view('index', $data);
 	}
 
@@ -228,6 +276,46 @@ class Permintaan extends CI_Controller {
 			$this->session->set_flashdata('msg', 'Data berhasil disimpan! ');
 			redirect('permintaan/baru');
 		}
+	}
+
+	public function approve($id, $re)
+	{
+		$q = $this->Permintaan_model->get_data($id);
+		$res = $q->result();
+			$id_barang = 0;
+		foreach ($res as $row) {
+			$id_barang = $row->id_barang;
+		}
+
+		if(
+			$this->Permintaan_model->update(array('status' => 1), $id)
+			&&
+			$this->Barang_model->update(array('status' => 1), $id_barang)
+
+		){
+			$this->session->set_flashdata('msg_title', 'Sukses!');
+			$this->session->set_flashdata('msg_status', 'alert-success');
+			$this->session->set_flashdata('msg', 'Data berhasil disimpan! ');
+		}else{
+			$this->session->set_flashdata('msg_title', 'Terjadi Kesalahan!');
+			$this->session->set_flashdata('msg_status', 'alert-danger');
+			$this->session->set_flashdata('msg', 'Data gagal dihapus! ');
+		}
+		redirect('permintaan/'.$re);
+	}
+
+	public function tolak($id, $re)
+	{
+		if($this->Permintaan_model->update(array('status' => 2), $id)){
+			$this->session->set_flashdata('msg_title', 'Sukses!');
+			$this->session->set_flashdata('msg_status', 'alert-success');
+			$this->session->set_flashdata('msg', 'Data berhasil disimpan! ');
+		}else{
+			$this->session->set_flashdata('msg_title', 'Terjadi Kesalahan!');
+			$this->session->set_flashdata('msg_status', 'alert-danger');
+			$this->session->set_flashdata('msg', 'Data gagal dihapus! ');
+		}
+		redirect('permintaan/');
 	}
 
 }

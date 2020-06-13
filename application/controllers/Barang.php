@@ -8,9 +8,6 @@ class Barang extends CI_Controller {
 	public function __construct() 
 	{ 
 		parent::__construct();
-		if(!isset($_SESSION['user'])){
-			redirect('login');
-		}
 		$this->load->model("Barang_model", "", TRUE);
 		$this->load->model("Jenis_model", "", TRUE);
 		$this->load->model("Satuan_model", "", TRUE);
@@ -191,18 +188,7 @@ class Barang extends CI_Controller {
 
 	public function hapus($v='')
 	{
-		$foto='';
-		$q = $this->Barang_model->get_data($v);
-		$res = $q->result();
-		foreach ($res as $row) {
-			$foto=$row->foto;
-		}
-
 		if($this->Barang_model->delete($v)){
-			$msg = "";
-			if(!unlink($foto)){
-				$msg = "GAGAL";
-			}
 			$this->session->set_flashdata('msg_title', 'Sukses!');
 			$this->session->set_flashdata('msg_status', 'alert-success');
 			$this->session->set_flashdata('msg', 'Data berhasil dihapus! ');

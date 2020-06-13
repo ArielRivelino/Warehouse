@@ -29,7 +29,7 @@ class login extends CI_Controller{
 			$this->session->set_flashdata('msg_status', 'alert-danger');
 			$this->session->set_flashdata('msg', 'nik/password salah! ');
 			echo $this->db->last_query();
-			//redirect('login');
+			redirect('login');
 		}
 	}
 

@@ -7,9 +7,6 @@ class User_access extends CI_Controller {
 	public function __construct() 
 	{ 
 		parent::__construct();
-		if(!isset($_SESSION['user'])){
-			redirect('login');
-		}
 		$this->load->model("User_access_model", "", TRUE);
 		$this->load->model("User_role_model", "", TRUE);
 		$this->load->model("Menu_model", "", TRUE);

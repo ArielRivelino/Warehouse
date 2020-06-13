@@ -57,6 +57,7 @@ class CI_Controller {
 	 * @var	object
 	 */
 	private static $instance;
+	public static $aksi;
 
 	/**
 	 * Class constructor
@@ -78,6 +79,38 @@ class CI_Controller {
 		$this->load =& load_class('Loader', 'core');
 		$this->load->initialize();
 		log_message('info', 'Controller Class Initialized');
+
+		$ins = self::$instance;
+		if(!isset($_SESSION['user']) &&  $ins->router->class!="login"){
+			redirect('login');
+		}
+		if($ins->router->class!="Dashboard" && $ins->router->class!="error_custom"){
+			$sg2 = ($this->uri->segment(2) === FALSE)?'':'/'.$this->uri->segment(2);
+			$link = $ins->router->class;
+			if($sg2=="/stok" || $sg2=="/baru"){
+				$link = $ins->router->class."$sg2";
+			}
+
+
+			$q = $this->User_access_model->get_where(array("t_access.role_id" => $_SESSION['role_id'], "url" => $link));
+			if($sg2=="/approve" || $sg2=="/tolak"){
+				$q = $this->User_access_model->get_where(array("t_access.role_id" => $_SESSION['role_id']));
+			}
+			/*echo "<h1>";
+			echo "$sg2 ";
+			echo $this->db->last_query();
+			echo "</h1>";*/
+			$res = $q->result();
+			if($q->num_rows()>0){
+	    		foreach ($res as $row) {
+	    			//echo $row->aksi;
+	    			self::$aksi = $row->aksi;
+	    		}
+			}else{
+				redirect("error_custom/error_403");
+			}
+			//self::$aksi = '1,2,3';
+		}
 	}
 
 	// --------------------------------------------------------------------
@@ -91,6 +124,11 @@ class CI_Controller {
 	public static function &get_instance()
 	{
 		return self::$instance;
+	}
+
+	public static function get_aksi()
+	{
+		return self::$aksi;
 	}
 
 }

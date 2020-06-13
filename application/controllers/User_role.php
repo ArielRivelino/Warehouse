@@ -8,9 +8,6 @@ class User_role extends CI_Controller {
 	public function __construct() 
 	{ 
 		parent::__construct();
-		if(!isset($_SESSION['user'])){
-			redirect('login');
-		}
 		$this->load->model("User_role_model", "", TRUE);
 	}
 
